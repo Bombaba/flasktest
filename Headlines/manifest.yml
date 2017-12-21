@@ -1,0 +1,5 @@
+---
+applications:
+ - name: Headlines
+   random-route: true
+   memory: 64M
