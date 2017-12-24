@@ -1,2 +1,3 @@
 Headlines/.vscode/*
 CrimeMap/dbconfig.py
+*.pyc
