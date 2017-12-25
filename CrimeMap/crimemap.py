@@ -2,6 +2,7 @@ from dbcrime import DBCrime
 import flask
 import dbconfig
 
+
 app = flask.Flask(__name__)
 DB = DBCrime()
 
@@ -9,7 +10,9 @@ DB = DBCrime()
 def home():
     data = None
     data = DB.get_all_inputs()
-    return flask.render_template("home.html", data=data)
+    return flask.render_template("home.html",
+                                 data=data,
+                                )
 
 @app.route("/add", methods=['POST'])
 def add():
