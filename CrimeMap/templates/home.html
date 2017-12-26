@@ -4,34 +4,47 @@
     <title>Map</title>
     <link rel="stylesheet"
      href="{{url_for('static', filename='css/style.css')}}" />
-    <script async defer
-     src="https://maps.googleapis.com/maps/api/js">
-    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key={{map_key}}"></script>
+    <!--<script src="{{url_for('static', filename='src/map.js')}}"></script>-->
     <script>
-      "use strict";
-      function initialize() {
+    "use strict";
+
+    function initialize() {
         let marker;
         const mapOptions = {
-          center: {lat: -33.30578381949298, lng: 26.523442268371582},
-          zoom: 15
+            center: {lat: -33.30578381949298, lng: 26.523442268371582},
+            zoom: 15
         };
         const map = new google.maps.Map(
-          document.getElementById("map-canvas"), mapOptions);
+            document.getElementById("map-canvas"), mapOptions
+        );
         google.maps.event.addListener(map, 'click',
-          (event) => {
-            if (marker) {
-              marker.setPosition(event.latLng);
-            } else {
-              marker = new google.maps.Marker({
-                position: event.latLng,
-                map: map
-              });
+            (event) => {
+                if (marker) {
+                    marker.setPosition(event.latLng);
+                } else {
+                    marker = new google.maps.Marker({
+                        position: event.latLng,
+                        map: map
+                    });
+                }
+                document.getElementById('latitude').value = event.latLng.lat();
+                document.getElementById('longitude').value = event.latLng.lng();
             }
-            document.getElementById('latitude').value = event.latLng.lat();
-            document.getElementById('longitude').value = event.latLng.lng();
-          }
-        )
-      }
+        );
+
+        placeCrimes(map, {{ crimes | safe }});
+    }
+
+    function placeCrimes(map, crimes) {
+        for (const [i, c] of crimes.entries()) {
+            const crime = new google.maps.Marker({
+                position: {lat: c.latitude, lng: c.longitude},
+                map: map,
+                title: `${c.date}\n${c.category}\n${c.description}`
+            });
+        }
+    }
     </script>
   </head>
   <body onload="initialize()">
@@ -55,8 +68,7 @@
         <input name="longitude" id="longitude" type="text">
         <label for="description">Description</label>
         <textarea name="description" id="description"
-         placeholder="A brief but detailed description of the crime">
-        </textarea>
+         placeholder="A brief but detailed description of the crime"></textarea>
         <input type="submit" value="Submit">
       </form>
     </div>

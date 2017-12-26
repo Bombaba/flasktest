@@ -1,6 +1,7 @@
-from dbcrime import DBCrime
 import flask
 import dbconfig
+import json
+from dbcrime import DBCrime
 
 
 app = flask.Flask(__name__)
@@ -8,22 +9,21 @@ DB = DBCrime()
 
 @app.route("/")
 def home():
-    data = None
-    data = DB.get_all_inputs()
-    return flask.render_template("home.html",
-                                 data=data,
-                                )
+    crimes = DB.get_all_crimes()
+    crimes = json.dumps(crimes)
+    return flask.render_template(
+        "home.html", map_key=dbconfig.gmap_key, crimes=crimes
+    )
+    # p.141
 
-@app.route("/add", methods=['POST'])
-def add():
-    data = flask.request.form.get("userinput")
-    if data:
-        DB.add_input(data)
-    return home()
-
-@app.route("/clear")
-def clear():
-    DB.clear_all()
+@app.route("/submitcrime", methods=['POST'])
+def submitcrime():
+    category = flask.request.form.get("category")
+    date = flask.request.form.get("date")
+    latitude = float(flask.request.form.get("latitude"))
+    longitude = float(flask.request.form.get("longitude"))
+    description = flask.request.form.get("description")
+    DB.add_crime(category, date, latitude, longitude, description)
     return home()
 
 if __name__ == '__main__':
