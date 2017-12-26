@@ -5,7 +5,6 @@
     <link rel="stylesheet"
      href="{{url_for('static', filename='css/style.css')}}" />
     <script async defer src="https://maps.googleapis.com/maps/api/js?key={{map_key}}"></script>
-    <!--<script src="{{url_for('static', filename='src/map.js')}}"></script>-->
     <script>
     "use strict";
 
@@ -57,20 +56,24 @@
       <form action="/submitcrime" method="POST">
         <label for="category" id="category">Category</label>
         <select name="category" id="category">
-          <option value="mugging">Mugging</option>
-          <option value="breakin">Break-in</option>
+          {% for category in categories %}
+            <option value="{{category}}">{{category}}</option>
+          {% endfor %}
         </select>
         <label for="date">Date</label>
         <input name="date" id="date" type="date">
         <label for="latitude">Latitude</label>
-        <input name="latitude" id="latitude" type="text">
+        <input name="latitude" id="latitude" type="text" readonly>
         <label for="longitude">Longitude</label>
-        <input name="longitude" id="longitude" type="text">
+        <input name="longitude" id="longitude" type="text" readonly>
         <label for="description">Description</label>
         <textarea name="description" id="description"
          placeholder="A brief but detailed description of the crime"></textarea>
         <input type="submit" value="Submit">
       </form>
+      {% if error_message %}
+        <div id="error"><p><strong>ERROR:</strong>{{error_message}}</p></div>
+      {% endif %}
     </div>
   </body>
 </html>
