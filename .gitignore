@@ -1,3 +1,5 @@
 */.vscode/*
 CrimeMap/dbconfig.py
 *.pyc
+waitercaller/config.py
+waitercaller/dbconfig.py
