@@ -1,12 +1,17 @@
 import datetime
 import flask
 import flask_login
-from mocklogindb import MockLoginDB as LoginDB
+import config
 from user import User
 from passwordhelper import validate_password
 from forms import RegistrationForm, LoginForm, CreateTableForm
 
-DB = LoginDB()
+if config.test:
+    from mocklogindb import MockLoginDB as DataBase
+else:
+    from mongohelper import MongoHelper as DataBase
+
+DB = DataBase(config.DB_NAME)
 
 app = flask.Flask(__name__)
 app.secret_key = 'g%|m?EHF-5V%aujbjM{%|Mz##SG!xNzdWFGJT1mV'
@@ -18,7 +23,6 @@ def home():
         "home.html", loginform=LoginForm(),
         registrationform=RegistrationForm()
     )
-
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -40,7 +44,7 @@ def register():
     form = RegistrationForm(flask.request.form)
     if form.validate():
         if DB.get_user(form.email.data):
-            form.email.errors.append("Email address already registered")
+            form.email.errors.append("email address already registered")
             return flask.render_template('home.html', registrationform=form)
         DB.add_user(form.email.data, form.password.data)
         return flask.render_template(
@@ -103,8 +107,9 @@ def dashboard_resolve():
 
 @app.route("/newrequest/<table_id>")
 def new_request(table_id):
-    DB.add_request(table_id, datetime.datetime.now())
-    return "Your request has been logged and a waiter will be with you shortly."
+    if DB.add_request(table_id, datetime.datetime.now()):
+        return "Your request has been logged and a waiter will be with you shortly."
+    return "There is already a request pending for this table. Please be patient, a waiter will be there ASAP."
 
 
 @login_manager.user_loader

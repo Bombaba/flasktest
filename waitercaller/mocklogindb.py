@@ -24,10 +24,10 @@ MOCK_REQUESTS = [
 ]
 
 class MockLoginDB(DBHelper):
-    def __init__(self):
+    def __init__(self, db_name):
         super().__init__(dbconfig.db_user,
                          dbconfig.db_password,
-                         dbconfig.db_name,
+                         db_name,
                          'localhost')
 
     def get_user(self, email):

@@ -1,5 +1,5 @@
 class User:
-    def __init__(self, email, salt, hash):
+    def __init__(self, email, salt, hash, *args, **kwargs):
         self.email = email
         self.salt = salt
         self.hash = hash
